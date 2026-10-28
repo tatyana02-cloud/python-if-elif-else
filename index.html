@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Тест по Python — Условия и ошибки</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    body {
+      background: #f0f4f8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .quiz-card {
+      background: #ffffff;
+      width: 100%;
+      max-width: 740px;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      padding: 32px;
+      position: relative;
+    }
+    .start-screen {
+      text-align: center;
+      padding: 10px 0;
+    }
+    .start-title {
+      font-size: 24px;
+      font-weight: 800;
+      color: #1e293b;
+      margin-bottom: 20px;
+    }
+    .rules-card {
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      padding: 20px 24px;
+      text-align: left;
+      margin-bottom: 28px;
+    }
+    .rules-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 12px;
+    }
+    .rules-list {
+      list-style-type: decimal;
+      padding-left: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .rules-list li {
+      font-size: 15px;
+      color: #334155;
+      line-height: 1.5;
+    }
+    .btn-primary {
+      background: #334155;
+      color: #ffffff;
+      border: none;
+      border-radius: 6px;
+      padding: 12px 28px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-primary:hover {
+      background: #1e293b;
+    }
+    .progress-bar-container {
+      width: 100%;
+      height: 6px;
+      background: #e2e8f0;
+      border-radius: 3px;
+      margin-bottom: 24px;
+      overflow: hidden;
+    }
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: #334155;
+      transition: width 0.3s ease;
+    }
+    .header-info {
+      display: flex;
+      justify-content: space-between;
+      color: #64748b;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .question-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 16px;
+      line-height: 1.4;
+    }
+    .code-box {
+      background: #1e1e2e;
+      color: #ffffff;
+      padding: 16px;
+      border-radius: 8px;
+      font-family: 'Consolas', 'Courier New', monospace;
+      font-size: 15px;
+      line-height: 1.5;
+      margin-bottom: 20px;
+      white-space: pre-wrap;
+    }
+    .options-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .option-btn {
+      background: #ffffff;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 15px;
+      color: #334155;
+      text-align: left;
+      cursor: pointer;
+      transition: background-color 0.2s, border-color 0.2s;
+      line-height: 1.4;
+    }
+    .option-btn:hover:not(:disabled):not(.wrong) {
+      background: #f1f5f9;
+      border-color: #cbd5e1;
+    }
+    .option-btn.correct {
+      background: #dcfce7 !important;
+      border-color: #22c55e !important;
+      color: #15803d !important;
+      font-weight: 600;
+    }
+    .option-btn.wrong {
+      background: #fee2e2 !important;
+      border-color: #ef4444 !important;
+      color: #b91c1c !important;
+    }
+    .feedback-box {
+      padding: 14px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      margin-bottom: 20px;
+      display: none;
+      line-height: 1.5;
+    }
+    .feedback-box.correct {
+      background: #f0fdf4;
+      border-left: 5px solid #22c55e;
+      color: #166534;
+    }
+    .feedback-box.wrong {
+      background: #fef2f2;
+      border-left: 5px solid #ef4444;
+      color: #991b1b;
+    }
+    .code-subtitle {
+      margin-top: 12px;
+      margin-bottom: 6px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+    .correct-code-display {
+      background: #0f172a;
+      color: #ffffff;
+      padding: 12px 14px;
+      border-radius: 6px;
+      font-family: 'Consolas', 'Courier New', monospace;
+      font-size: 14px;
+      white-space: pre-wrap;
+    }
+    .next-btn {
+      background: #334155;
+      color: #ffffff;
+      border: none;
+      border-radius: 6px;
+      padding: 10px 22px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      display: none;
+      margin-left: auto;
+      transition: background 0.2s;
+    }
+    .next-btn:hover {
+      background: #1e293b;
+    }
+    .result-screen {
+      display: none;
+      text-align: center;
+      padding: 10px 0;
+    }
+    .result-score {
+      font-size: 44px;
+      font-weight: 800;
+      color: #1e293b;
+      margin: 12px 0;
+    }
+    .result-msg {
+      font-size: 15px;
+      color: #475569;
+      margin-bottom: 24px;
+    }
+    .results-badges {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+      margin: 16px 0 28px 0;
+    }
+    .badge-item {
+      width: 42px;
+      height: 42px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 14px;
+    }
+    .badge-item.correct {
+      background: #dcfce7;
+      color: #15803d;
+      border: 2px solid #22c55e;
+    }
+    .badge-item.wrong {
+      background: #fee2e2;
+      color: #b91c1c;
+      border: 2px solid #ef4444;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-card">
+    <div class="start-screen" id="start-screen">
+      <h1 class="start-title">Тест: Условия и синтаксис в Python</h1>
+      <div class="rules-card">
+        <div class="rules-title">Инструкция к прохождению:</div>
+        <ol class="rules-list">
+          <li><strong>Начисление баллов:</strong> 1 балл дается только за выбор правильного ответа с первой попытки.</li>
+          <li><strong>Разбор решений:</strong> после выбора варианта отображается подробное объяснение работы кода.</li>
+          <li><strong>Порядок:</strong> переход к следующему заданию открывается только после нахождения правильного ответа.</li>
+        </ol>
+      </div>
+      <button class="btn-primary" onclick="startQuiz()">Начать тестирование</button>
+    </div>
+
+    <div id="quiz-content" style="display: none;">
+      <div class="progress-bar-container">
+        <div class="progress-bar" id="progress"></div>
+      </div>
+      <div class="header-info">
+        <span id="question-number">Задание 1 из 9</span>
+        <span id="score-counter">Баллы: 0</span>
+      </div>
+      <div class="question-title" id="question-text"></div>
+      <div class="code-box" id="code-block" style="display: none;"></div>
+      <div class="options-grid" id="options"></div>
+      <div class="feedback-box" id="feedback"></div>
+      <button class="next-btn" id="next-btn" onclick="nextQuestion()">Следующее задание</button>
+    </div>
+
+    <div class="result-screen" id="result-screen">
+      <h2>Тестирование завершено</h2>
+      <div class="result-score" id="final-score">0 / 9</div>
+      <p class="result-msg" id="final-message"></p>
+      
+      <div style="font-weight: 600; color: #334155; margin-bottom: 8px;">Результаты по заданиям:</div>
+      <div class="results-badges" id="results-badges"></div>
+
+      <button class="btn-primary" onclick="restartQuiz()">Пройти повторно</button>
+    </div>
+  </div>
+
+  <script>
+    const dynamicSlots = {
+      // Слот: проверка кода через оператор != (бывший №6)
+      slot6: [
+        {
+          text: "Что напечатает программа при проверке введенного кода доступа через оператор !=?",
+          code: "code = 1234\n\nif code != 0:\n    print(\"Код введен\")\nelse:\n    print(\"Код отсутствует\")",
+          options: [
+            { text: "Код введен", comment: "Оператор != означает «не равно». Так как 1234 не равно 0, условие code != 0 истинно (True), поэтому срабатывает ветка if.", isCorrect: true },
+            { text: "Код отсутствует", comment: "Ветка else сработала бы только если бы переменная code была равна 0.", isCorrect: false },
+            { text: "Код введен Код отсутствует", comment: "В конструкции if ... else всегда выполняется только одна из двух веток.", isCorrect: false },
+            { text: "Ошибка SyntaxError", comment: "Оператор != записан полностью корректно.", isCorrect: false }
+          ],
+          correctCode: null
+        },
+        {
+          text: "Что напечатает программа при проверке введенного кода доступа через оператор !=?",
+          code: "code = 0\n\nif code != 0:\n    print(\"Код введен\")\nelse:\n    print(\"Код отсутствует\")",
+          options: [
+            { text: "Код отсутствует", comment: "Оператор != проверяет «не равно». Так как переменная code равна 0, условие code != 0 ложно (False), поэтому срабатывает ветка else.", isCorrect: true },
+            { text: "Код введен", comment: "Ветка if сработала бы только если число code не было равно нулю.", isCorrect: false },
+            { text: "Код введен Код отсутствует", comment: "В конструкции if ... else всегда выполняется строго один блок.", isCorrect: false },
+            { text: "Ошибка SyntaxError", comment: "Синтаксис программы полностью правильный.", isCorrect: false }
+          ],
+          correctCode: null
+        }
+      ],
+
+      // Слот: агрегатное состояние (бывший №9)
+      slot9: [
+        {
+          text: "Что напечатает программа при значении переменной t = 20?",
+          code: "t = 20\n\nif t <= 0:\n    print(\"Лед\")\nelif t >= 100:\n    print(\"Пар\")\nelse:\n    print(\"Вода\")",
+          options: [
+            { text: "Вода", comment: "Оба условия выше ложны, поэтому управление автоматически переходит в ветку else (диапазон от 1 до 99).", isCorrect: true },
+            { text: "Лед", comment: "Условие 20 <= 0 ложно (False).", isCorrect: false },
+            { text: "Пар", comment: "Условие 20 >= 100 ложно (False).", isCorrect: false },
+            { text: "Ничего не выведет", comment: "Блок else гарантированно перехватывает все оставшиеся варианты.", isCorrect: false }
+          ],
+          correctCode: null
+        },
+        {
+          text: "Что напечатает программа при значении переменной t = -5?",
+          code: "t = -5\n\nif t <= 0:\n    print(\"Лед\")\nelif t >= 100:\n    print(\"Пар\")\nelse:\n    print(\"Вода\")",
+          options: [
+            { text: "Лед", comment: "Условие t <= 0 истинно (-5 <= 0), поэтому сразу выполняется блок if и выводится «Лед».", isCorrect: true },
+            { text: "Пар", comment: "Условие t >= 100 даже не проверяется, так как сработал первый if.", isCorrect: false },
+            { text: "Вода", comment: "Ветка else срабатывает только когда все предыдущие if и elif дали False.", isCorrect: false },
+            { text: "Лед Вода", comment: "В каскаде if-elif-else срабатывает строго один блок.", isCorrect: false }
+          ],
+          correctCode: null
+        },
+        {
+          text: "Что напечатает программа при значении переменной t = 100?",
+          code: "t = 100\n\nif t <= 0:\n    print(\"Лед\")\nelif t >= 100:\n    print(\"Пар\")\nelse:\n    print(\"Вода\")",
+          options: [
+            { text: "Пар", comment: "Первое условие ложно, а условие elif t >= 100 истинно (100 >= 100), поэтому выводится «Пар».", isCorrect: true },
+            { text: "Лед", comment: "Условие 100 <= 0 ложно (False).", isCorrect: false },
+            { text: "Вода", comment: "До ветки else управление не доходит, так как elif выполнился.", isCorrect: false },
+            { text: "Пар Вода", comment: "После выполнения подошедшей ветки elif каскад условий завершает работу.", isCorrect: false }
+          ],
+          correctCode: null
+        }
+      ]
+    };
+
+    const staticQuestions = {
+      // Новое задание: про ==
+      qDoubleEquals: {
+        text: "Что означает оператор == в условиях Python?",
+        code: "if x == 10:\n    print(\"Число равно десяти\")",
+        options: [
+          { text: "Проверка на равенство («равно ли»)", comment: "Двойной знак == проверяет равенство значений слева и справа. Если значения совпадают, условие возвращает True.", isCorrect: true },
+          { text: "Присваивание переменной нового значения", comment: "Для присваивания значений в Python используется одиночный знак «=».", isCorrect: false },
+          { text: "Проверка на неравенство величин", comment: "Проверка на неравенство выполняется с помощью знака «!=».", isCorrect: false },
+          { text: "Повторение условия дважды", comment: "Оператора повторения условий в таком виде не существует.", isCorrect: false }
+        ],
+        correctCode: null
+      },
+      // Бывшее задание 5
+      q5: {
+        text: "Что означает оператор != в условиях Python?",
+        code: "if x != 0:\n    print(\"Число не ноль\")",
+        options: [
+          { text: "Проверка на неравенство («не равно»)", comment: "Оператор != проверяет, что левая и правая части не равны друг другу. Если x не равен 0, условие возвращает True.", isCorrect: true },
+          { text: "Присваивание переменной значения с отрицанием", comment: "Для присваивания значений используется одиночный знак «=». Оператор != является оператором сравнения.", isCorrect: false },
+          { text: "Проверка на строгое равенство двух величин", comment: "Проверка на равенство выполняется с помощью двойного знака «==».", isCorrect: false },
+          { text: "Логическое умножение условий", comment: "Логическое умножение (связка «И») в Python обозначается словом and.", isCorrect: false }
+        ],
+        correctCode: null
+      },
+      // Бывшее задание 12 (двоеточие убрано и после else)
+      q12: {
+        text: "В чем заключается синтаксическая ошибка в этой программе?",
+        code: "age = int(input(\"Возраст: \"))\n\nif age >= 16\n    print(\"Проходите\")\nelse\n    print(\"Вход закрыт\")",
+        options: [
+          { text: "В конце строк if и else забыли поставить обязательные двоеточия «:»", comment: "Каждая строка условия в Python (if, elif, else) обязана оканчиваться двоеточием.", isCorrect: true },
+          { text: "После if нельзя делать отступ в 4 пробела", comment: "Отступы в Python строго обязательны для обозначения тела блока.", isCorrect: false },
+          { text: "Оператора >= не существует в Python", comment: "Оператор >= (больше или равно) является стандартным.", isCorrect: false },
+          { text: "Вместо else нужно обязательно писать elif", comment: "Для двух альтернатив конструкция if ... else абсолютно верна.", isCorrect: false }
+        ],
+        correctCode: "age = int(input(\"Возраст: \"))\n\nif age >= 16:\n    print(\"Проходите\")\nelse:\n    print(\"Вход закрыт\")"
+      },
+      // Бывшее задание 13
+      q13: {
+        text: "Какую ошибку вызовет интерпретатор Python при попытке запустить этот код?",
+        code: "score = 85\n\nif score >= 80:\nprint(\"Отлично!\")\nelse:\n    print(\"Попробуйте еще раз\")",
+        options: [
+          { text: "IndentationError: строчка print(\"Отлично!\") написана без обязательного отступа в 4 пробела", comment: "Тело блока после if обязано быть смещено вправо (обычно 4 пробела). Отсутствие отступа вызывает ошибку IndentationError: expected an indented block.", isCorrect: true },
+          { text: "TypeError: нельзя сравнивать переменную score с числом 80", comment: "Сравнение чисел оператором >= корректно.", isCorrect: false },
+          { text: "SyntaxError: слово score является зарезервированным", comment: "score — корректное имя переменной.", isCorrect: false },
+          { text: "Программа напечатает обе фразы", comment: "Код даже не начнет выполняться из-за синтаксической ошибки структуры отступов.", isCorrect: false }
+        ],
+        correctCode: "score = 85\n\nif score >= 80:\n    print(\"Отлично!\")\nelse:\n    print(\"Попробуйте еще раз\")"
+      },
+      // Бывшее задание 14
+      q14: {
+        text: "Программа проверяет четность числа. Какая критическая ошибка допущена в строке с if?",
+        code: "num = int(input(\"Число: \"))\n\nif num % 2 = 0:\n    print(\"Четное\")\nelse:\n    print(\"Нечетное\")",
+        options: [
+          { text: "Использован одинарный знак присваивания = вместо оператора сравнения ==", comment: "Одинарный знак = записывает значение в переменную. Для проверки равенства в условии обязательно используется двойное равенство ==.", isCorrect: true },
+          { text: "Для четности остаток должен проверяться через обычное деление / 2", comment: "Деление / дает вещественное число, а остаток вычисляется только оператором %.", isCorrect: false },
+          { text: "Ветку else синтаксически запрещено использовать с проверкой остатка %", comment: "Ветка else универсальна и может использоваться с любыми условиями.", isCorrect: false },
+          { text: "Внутри if нельзя писать математические операции", comment: "Внутри условий можно производить любые допустимые вычисления.", isCorrect: false }
+        ],
+        correctCode: "num = int(input(\"Число: \"))\n\nif num % 2 == 0:\n    print(\"Четное\")\nelse:\n    print(\"Нечетное\")"
+      },
+      // Бывшее задание 15
+      q15: {
+        text: "Почему этот фрагмент кода завершится ошибкой SyntaxError?",
+        code: "ball = 3\n\nif ball == 5:\n    print(\"Отлично\")\nelse ball == 4:\n    print(\"Хорошо\")\nelse:\n    print(\"Нужно подтянуть\")",
+        options: [
+          { text: "После else написали условие ball == 4: для дополнительных условий нужно использовать elif", comment: "Ветка else перехватывает все оставшиеся случаи и не может иметь собственного условия. Для проверки дополнительного условия используется ключевое слово elif.", isCorrect: true },
+          { text: "В Python нельзя использовать больше одной ветки ветвления", comment: "Цепочки ветвлений могут содержать сколько угодно проверок через elif.", isCorrect: false },
+          { text: "Слово print написано с заглавной буквы", comment: "Функция print написана со строчной буквы.", isCorrect: false },
+          { text: "Переменная ball не может быть равна числу", comment: "Присваивание числа целочисленной переменной корректно.", isCorrect: false }
+        ],
+        correctCode: "ball = 3\n\nif ball == 5:\n    print(\"Отлично\")\nelif ball == 4:\n    print(\"Хорошо\")\nelse:\n    print(\"Нужно подтянуть\")"
+      },
+      // Бывшее задание 16
+      q16: {
+        text: "Какая ошибка допущена в этом коде?",
+        code: "price = 500\n\nif price =< 1000:\n    print(\"Базовая цена\")\nelse:\n    print(\"Премиум цена\")",
+        options: [
+          { text: "Неверный порядок знаков в операторе сравнения: написано =< вместо <=", comment: "Составные операторы сравнения всегда пишутся со знаком равенства на втором месте: <= (меньше или равно), >= (больше или равно), != (не равно). Написание =< недопустимо и вызывает ошибку синтаксиса.", isCorrect: true },
+          { text: "Слово price нельзя использовать в качестве имени переменной", comment: "Имя price полностью соответствует правилам именования идентификаторов.", isCorrect: false },
+          { text: "Ветку else нельзя ставить после сравнения чисел", comment: "Блок else синтаксически корректно закрывает любое условие if.", isCorrect: false },
+          { text: "Число 1000 обязательно нужно было взять в кавычки \"1000\"", comment: "Оборачивание в кавычки превратит число в строку, что привело бы к ошибке сравнения типов.", isCorrect: false }
+        ],
+        correctCode: "price = 500\n\nif price <= 1000:\n    print(\"Базовая цена\")\nelse:\n    print(\"Премиум цена\")"
+      }
+    };
+
+    const letters = ["А", "Б", "В", "Г"];
+    let questions = [];
+    let currentQuestion = 0;
+    let score = 0;
+    let currentQuestionSolved = false;
+    let attemptsThisQuestion = 0;
+    let questionResults = [];
+
+    function getRandomItem(arr) {
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    function shuffleArray(array) {
+      const arr = [...array];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function prepareQuestions() {
+      // Собираем ровно нужные задания: новое про ==, затем 5, 6, 9, 12, 13, 14, 15, 16
+      const compiledQuestions = [
+        { ...staticQuestions.qDoubleEquals, prefix: "№1. " },
+        { ...staticQuestions.q5, prefix: "№2. " },
+        { ...getRandomItem(dynamicSlots.slot6), prefix: "№3. " },
+        { ...getRandomItem(dynamicSlots.slot9), prefix: "№4. " },
+        { ...staticQuestions.q12, prefix: "№5. " },
+        { ...staticQuestions.q13, prefix: "№6. " },
+        { ...staticQuestions.q14, prefix: "№7. " },
+        { ...staticQuestions.q15, prefix: "№8. " },
+        { ...staticQuestions.q16, prefix: "№9. " }
+      ];
+
+      questions = compiledQuestions.map(q => {
+        return {
+          ...q,
+          text: q.prefix + q.text,
+          options: shuffleArray(q.options)
+        };
+      });
+    }
+
+    function startQuiz() {
+      prepareQuestions();
+      document.getElementById('start-screen').style.display = 'none';
+      document.getElementById('quiz-content').style.display = 'block';
+      loadQuestion();
+    }
+
+    function loadQuestion() {
+      currentQuestionSolved = false;
+      attemptsThisQuestion = 0;
+      const q = questions[currentQuestion];
+      
+      document.getElementById('question-number').innerText = `Задание ${currentQuestion + 1} из ${questions.length}`;
+      document.getElementById('score-counter').innerText = `Баллы: ${score}`;
+      document.getElementById('progress').style.width = `${(currentQuestion / questions.length) * 100}%`;
+      
+      document.getElementById('question-text').innerText = q.text;
+      
+      const codeBlock = document.getElementById('code-block');
+      if (q.code) {
+        codeBlock.innerText = q.code;
+        codeBlock.style.display = 'block';
+      } else {
+        codeBlock.style.display = 'none';
+      }
+
+      const optionsContainer = document.getElementById('options');
+      optionsContainer.innerHTML = '';
+
+      q.options.forEach((opt, index) => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.innerText = `${letters[index]}) ${opt.text}`;
+        btn.onclick = () => selectOption(index, btn);
+        optionsContainer.appendChild(btn);
+      });
+
+      const feedback = document.getElementById('feedback');
+      feedback.style.display = 'none';
+      feedback.className = 'feedback-box';
+      feedback.innerHTML = '';
+      
+      document.getElementById('next-btn').style.display = 'none';
+    }
+
+    function selectOption(selectedIndex, clickedBtn) {
+      if (currentQuestionSolved) return;
+
+      const q = questions[currentQuestion];
+      const feedback = document.getElementById('feedback');
+      const selectedOptionData = q.options[selectedIndex];
+
+      if (selectedOptionData.isCorrect) {
+        currentQuestionSolved = true;
+
+        const allButtons = document.querySelectorAll('.option-btn');
+        allButtons.forEach((btn, idx) => {
+          btn.disabled = true;
+          if (q.options[idx].isCorrect) {
+            btn.classList.remove('wrong');
+            btn.classList.add('correct');
+          }
+        });
+
+        if (attemptsThisQuestion === 0) {
+          score++;
+          questionResults.push(true);
+        } else {
+          questionResults.push(false);
+        }
+
+        document.getElementById('score-counter').innerText = `Баллы: ${score}`;
+
+        feedback.className = 'feedback-box correct';
+        feedback.style.display = 'block';
+        
+        let feedbackHTML = `<strong>Верно.</strong> ${selectedOptionData.comment}`;
+        if (q.correctCode) {
+          feedbackHTML += `<div class="code-subtitle">Корректный код:</div>` +
+                          `<div class="correct-code-display">${q.correctCode}</div>`;
+        }
+        feedback.innerHTML = feedbackHTML;
+
+        document.getElementById('next-btn').style.display = 'block';
+      } else {
+        attemptsThisQuestion++;
+        clickedBtn.classList.add('wrong');
+        feedback.className = 'feedback-box wrong';
+        feedback.style.display = 'block';
+        feedback.innerHTML = `<strong>Неверно.</strong> ${selectedOptionData.comment}`;
+      }
+    }
+
+    function nextQuestion() {
+      currentQuestion++;
+      if (currentQuestion < questions.length) {
+        loadQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+      document.getElementById('quiz-content').style.display = 'none';
+      const resultScreen = document.getElementById('result-screen');
+      resultScreen.style.display = 'block';
+      
+      document.getElementById('final-score').innerText = `${score} / ${questions.length}`;
+      const msg = document.getElementById('final-message');
+      
+      if (score === questions.length) {
+        msg.innerText = "Превосходный результат! Все тестовые задачи решены с первой попытки без единой ошибки.";
+      } else if (score >= 7) {
+        msg.innerText = "Хороший уровень: правила синтаксиса и операторы сравнения усвоены уверенно.";
+      } else {
+        msg.innerText = "Рекомендуется повторить правила оформления условий (двоеточия, отступы в 4 пробела, знаки == и !=).";
+      }
+
+      const badgesContainer = document.getElementById('results-badges');
+      badgesContainer.innerHTML = '';
+      questionResults.forEach((isSuccess, idx) => {
+        const badge = document.createElement('div');
+        badge.className = `badge-item ${isSuccess ? 'correct' : 'wrong'}`;
+        badge.innerText = `№${idx + 1}`;
+        badgesContainer.appendChild(badge);
+      });
+    }
+
+    function restartQuiz() {
+      currentQuestion = 0;
+      score = 0;
+      questionResults = [];
+      document.getElementById('result-screen').style.display = 'none';
+      document.getElementById('start-screen').style.display = 'block';
+    }
+  </script>
+</body>
+</html>
